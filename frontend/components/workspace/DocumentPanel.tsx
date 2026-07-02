@@ -1,16 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Upload } from "lucide-react";
 
-import api from "@/services/api";
-
-interface Document {
-    id: string;
-    filename: string;
-    filepath: string;
-    uploaded_at: string;
-}
+import {
+    Document,
+    getDocuments,
+    uploadDocument,
+} from "@/services/documentService";
 
 interface Props {
     projectId: string;
@@ -19,24 +16,60 @@ interface Props {
 export default function DocumentPanel({ projectId }: Props) {
 
     const [documents, setDocuments] = useState<Document[]>([]);
+    const [uploading, setUploading] = useState(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
+
         loadDocuments();
+
     }, [projectId]);
 
     async function loadDocuments() {
 
         try {
 
-            const response = await api.get(
-                `/documents/${projectId}`
-            );
+            const docs = await getDocuments(projectId);
 
-            setDocuments(response.data);
+            setDocuments(docs);
 
         } catch (error) {
 
             console.error(error);
+
+        }
+
+    }
+
+    async function handleUpload(
+        event: React.ChangeEvent<HTMLInputElement>
+    ) {
+
+        const file = event.target.files?.[0];
+
+        if (!file) return;
+
+        try {
+
+            setUploading(true);
+
+            await uploadDocument(projectId, file);
+
+            await loadDocuments();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert("Upload failed");
+
+        } finally {
+
+            setUploading(false);
+
+            // Allows selecting the same file again later
+            event.target.value = "";
 
         }
 
@@ -55,12 +88,14 @@ export default function DocumentPanel({ projectId }: Props) {
                 </h2>
 
                 <button
-                    className="flex items-center gap-2 bg-black text-white px-3 py-2 rounded-lg hover:bg-gray-800"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 disabled:bg-gray-500"
                 >
 
                     <Upload size={18} />
 
-                    Upload
+                    {uploading ? "Uploading..." : "Upload"}
 
                 </button>
 
@@ -68,56 +103,56 @@ export default function DocumentPanel({ projectId }: Props) {
 
             <div className="mt-6 flex-1 overflow-y-auto">
 
-                {
+                {documents.length === 0 ? (
 
-                    documents.length === 0 ?
+                    <div className="text-gray-500">
 
-                    (
+                        No documents uploaded.
 
-                        <div className="text-gray-500">
+                    </div>
 
-                            No documents uploaded.
+                ) : (
 
-                        </div>
+                    documents.map((document) => (
 
-                    )
+                        <div
+                            key={document.id}
+                            className="border rounded-lg p-4 mb-3 hover:bg-gray-50"
+                        >
 
-                    :
+                            <div className="font-semibold">
 
-                    (
-
-                        documents.map(document => (
-
-                            <div
-                                key={document.id}
-                                className="border rounded-lg p-3 mb-3 hover:bg-gray-50"
-                            >
-
-                                <div className="font-medium">
-
-                                    {document.filename}
-
-                                </div>
-
-                                <div className="text-xs text-gray-500">
-
-                                    Uploaded:
-
-                                    {" "}
-
-                                    {new Date(document.uploaded_at).toLocaleString()}
-
-                                </div>
+                                {document.filename}
 
                             </div>
 
-                        ))
+                            <div className="text-sm text-gray-500 mt-1">
 
-                    )
+                                Uploaded:
 
-                }
+                                {" "}
+
+                                {new Date(
+                                    document.uploaded_at
+                                ).toLocaleString()}
+
+                            </div>
+
+                        </div>
+
+                    ))
+
+                )}
 
             </div>
+
+            <input
+                type="file"
+                accept=".pdf"
+                hidden
+                ref={fileInputRef}
+                onChange={handleUpload}
+            />
 
         </div>
 
