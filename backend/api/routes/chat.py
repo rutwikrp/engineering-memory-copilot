@@ -5,14 +5,14 @@ from services.chat_service import chat_service
 
 router = APIRouter(
     prefix="/chat",
-    tags=["Chat"]
+    tags=["Chat"],
 )
 
 
 @router.post("/")
-async def chat(request: ChatRequest):
+async def ask(request: ChatRequest):
 
     return await chat_service.ask(
-        request.project_id,
-        request.question
+        project_id=request.project_id,
+        question=request.question,
     )
