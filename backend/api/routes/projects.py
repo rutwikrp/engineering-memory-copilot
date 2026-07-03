@@ -41,9 +41,12 @@ async def get_project(project_id: str):
 @router.delete("/{project_id}")
 async def delete_project(project_id: str):
 
-    project = project_service.delete_project(project_id)
+    project = await project_service.delete_project(project_id)
 
-    if not project:
+    if project is None:
         raise HTTPException(status_code=404, detail="Project not found")
+    return {
+        "message": "Project deleted."
+    }
 
-    return {"message": "Project deleted"}
+    
