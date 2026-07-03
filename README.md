@@ -708,13 +708,9 @@ By combining Cognee's persistent memory capabilities with modern LLMs, this proj
 
 # 📸 Screenshots
 
-> Add screenshots of:
->
-> - Dashboard
-> - Project View
-> - Chat Interface
-> - Document Upload
-> - Memory Explorer
+<img width="1907" height="862" alt="dashboard" src="https://github.com/user-attachments/assets/81792547-8bfa-4a3c-9cfb-8f94473d3a4f" />
+<img width="1872" height="917" alt="project_space" src="https://github.com/user-attachments/assets/1178fdda-53c7-437d-b119-f2d4190472bb" />
+
 
 ---
 
