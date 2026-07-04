@@ -176,6 +176,7 @@ Future versions will use this feedback to continuously improve organizational me
                            │
                            LLM
 ```
+<img width="1536" height="1024" alt="ChatGPT Image Jul 4, 2026, 05_02_43 PM" src="https://github.com/user-attachments/assets/3a103ec8-d611-45ac-a755-a1bde7c611e2" />
 
 ---
 
